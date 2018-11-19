@@ -43,12 +43,6 @@ public class Jnode {
         remote.asynTask();
 
         while (true) try {
-            if (node.ping("remote",2000)) {
-                System.out.println("remote is up");
-            }
-            else {
-                System.out.println("remote is not up");
-            }
             o = mbox.receive();
             if (o instanceof OtpErlangTuple) {
                 msg = (OtpErlangTuple) o;
