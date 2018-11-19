@@ -1,6 +1,7 @@
 package com.jinterface.java;
 
 import com.ericsson.otp.erlang.*;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -30,14 +31,14 @@ public class Jnode {
         try {
             node = new OtpNode(java_node, cookie);
         } catch (IOException e) {
-            System.out.println("erlang node init error:" + e);
+            System.out.println("otp node init error:" + e);
         };
         OtpMbox mbox = node.createMbox("java_node");
         OtpErlangObject o;
         OtpErlangTuple msg;
         OtpErlangPid from;
         OtpErlangObject[] s;
-        OtpErlangTuple smsg;
+        OtpErlangTuple send;
 
         PingNode remote = new PingNode(node, remote_node);
         remote.asynTask();
@@ -52,14 +53,14 @@ public class Jnode {
                 switch (operate) {
                     case "msg_type":
                         data = ((OtpErlangString) msg.elementAt(2)).stringValue();
-                        System.out.println("recv msg:" + data);
-                        s = new OtpErlangObject[2];
-                        s[0] = mbox.self();
-                        s[1] = new OtpErlangString(data);
-                        smsg = new OtpErlangTuple(s);
-                        mbox.send(from, smsg);
-                        s = null;
-                        smsg = null;
+                        System.out.println("receive msg:" + data);
+                        s = new OtpErlangObject[1];
+                        s[0] = new OtpErlangString(data);
+                        send = new OtpErlangTuple(s);
+                        mbox.send(from, send);
+                        break;
+                    default:
+                        System.out.println("receive exception msg_type:" + operate);
                         break;
                 }
             }
