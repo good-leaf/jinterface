@@ -9,6 +9,7 @@ public class Jnode {
     public static void main(String[] args) throws InterruptedException {
         String java_node = "";
         String cookie = "";
+        String remote_node = "";
         Properties pro = new Properties();
         FileInputStream in;
         try {
@@ -16,8 +17,10 @@ public class Jnode {
             pro.load(in);
             java_node = pro.getProperty("java_node");
             cookie = pro.getProperty("cookie");
+            remote_node = pro.getProperty("remote_node");
             System.out.println("java_node:" + java_node);
             System.out.println("cookie:" + cookie);
+            System.out.println("remote_node:" + remote_node);
             in.close();
         } catch (IOException e) {
             System.out.println("java config read error:" + e);
@@ -35,7 +38,17 @@ public class Jnode {
         OtpErlangPid from;
         OtpErlangObject[] s;
         OtpErlangTuple smsg;
+
+        PingNode remote = new PingNode(node, remote_node);
+        remote.asynTask();
+
         while (true) try {
+            if (node.ping("remote",2000)) {
+                System.out.println("remote is up");
+            }
+            else {
+                System.out.println("remote is not up");
+            }
             o = mbox.receive();
             if (o instanceof OtpErlangTuple) {
                 msg = (OtpErlangTuple) o;
